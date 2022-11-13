@@ -1,3 +1,5 @@
+const {users}  = require('../models/users-model');
+
 const getUsers = (req, res) => {
     res.send({ massage: "success", users })
 }
@@ -22,7 +24,6 @@ const updateUser = (req, res) => {
     }
     res.send("user not found")
 }
-
 function findUserIndex(req) {
     const userItem = users.find(user => user.id == req.params.id);
     const startIndex = users.indexOf(userItem);
