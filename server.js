@@ -1,16 +1,20 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs')
+
 const app = express();
 const port = 8080;
-let users = [{ id: 0, name: "asd" }, { id: 5, name: "ghf" }, { id: 67, name: "kljl" }, { id: 32, name: "jgsds" }]
+
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 
 app.get('/', (req, res) => {
-    res.send({ massage: "success", data: users })
+    res.send({ massage: "success"})
 })
+app.listen(port, () => {
+    console.log(`server listen on port: ${port}`);
+})
+
 app.post('/', (req, res) => {
     users.push(req.body.user)
     res.send("success")
@@ -44,9 +48,7 @@ app.put('/student/update/:id', (req, res) => {
     }
     res.send("user not found");
 })
-app.listen(port, () => {
-    console.log(`server listen on port: ${port}`);
-})
+
 
 function findUserIndex(req) {
     const userItem = users.find(user => user.id == req.params.id);
