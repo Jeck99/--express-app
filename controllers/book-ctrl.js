@@ -1,35 +1,40 @@
-const {books}  = require('../models/books-model');
+const bookModel = require('../models/books-model');
 
-const getBooks = (req, res) => {
-    res.send({ massage: "success", books })
+const getBooks = async (req, res) => {
+    await bookModel.find({})
+        .then((books, error) => {
+            if (error) {
+                return res.status(400).json({ success: false, error })
+            }
+            if (books.length == 0) {
+                return res.json({ success: false, massage: "no books" })
+            }
+            res.status(200).json({ success: true, books })
+        })
 }
-const createBook = (req, res) => {
-    books.push(req.body.book)
-    res.send("success")
+const createBook = async (req, res) => {
+    //TODO validation
+    await bookModel.insertMany(req.body.book)
+        .then(() => res.status(300).json({ success: true, massage: "book added succesfuly" }))
+        .catch((error) => res.status(400).json({ success: false, error }))
 }
-const getBookById = (req, res) => {
-    const bookItem = books.find(book => book.id == req.params.id)
-    bookItem ? res.send(bookItem) : res.send("not found")
+const getBookById = async (req, res) => {
+    await bookModel.findById(req.params.id)
+        .then(book => {
+            if (!book) {
+                return res.json({ success: false, massage: "book is not available" })
+            }
+            return res.status(200).json({ success: true, book })
+        })
+        .catch(error => res.status(400).json({ success: false, error }))
 }
 const deleteBook = (req, res) => {
-    const startIndex = findBookIndex(req)
-    const as = books.splice(startIndex, 1)
-    as ? res.send(books) : res.send("error")
 }
 const updateBook = (req, res) => {
-    const bookIndex = findBookIndex(req)
-    if (bookIndex > -1) {
-        books[bookIndex] = req.body.book
-        return res.send("success")
-    }
-    res.send("book not found")
+
 }
-function findBookIndex(req) {
-    const bookItem = books.find(book => book.id == req.params.id);
-    const startIndex = books.indexOf(bookItem);
-    return startIndex;
-}
-module.exports={
+
+module.exports = {
     getBooks,
     createBook,
     getBookById,

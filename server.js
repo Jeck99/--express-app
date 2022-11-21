@@ -1,5 +1,8 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const cors = require('cors');
+require('./DB')
 const usersRouter = require('./routes/user-router');
 const booksRouter = require('./routes/books-router')
 const { usersCollection } = require('./models/users-model')
@@ -16,10 +19,11 @@ const myMiddleware = (req, res, next) => {
         req.body.password == user.password ? next():res.send('incorrect password')
 }
 app.use('/users', usersRouter)
-app.use('/books', myMiddleware, booksRouter)
+app.use('/books', booksRouter)
 app.get('/', (req, res) => {
     res.send({ massage: "success" })
 })
 app.listen(port, () => {
+    console.log(process.env.CONNECTION_STRING);
     console.log(`server listen on port: ${port}`);
 })

@@ -1,8 +1,12 @@
-let books = [
-    { id: 0, name: "asd" }, 
-    { id: 1, name: "ghf" }, 
-    { id: 2, name: "kljl" }, 
-    { id: 3, name: "jgsds" ,pages:78}
-]
+const mongoose = require('mongoose');
 
-module.exports = {books}
+const BookSchema = new mongoose.Schema({
+    title: String,
+    numberOfPages: Number,
+    author: String,
+    year: Number
+},
+    {
+        timestamps: true
+    })
+module.exports = mongoose.model("book",BookSchema)
