@@ -12,12 +12,6 @@ const getBooks = async (req, res) => {
             res.status(200).json({ success: true, books })
         })
 }
-const createBook = async (req, res) => {
-    //TODO validation
-    await bookModel.insertMany(req.body.book)
-        .then(() => res.status(300).json({ success: true, massage: "book added succesfuly" }))
-        .catch((error) => res.status(400).json({ success: false, error }))
-}
 const getBookById = async (req, res) => {
     await bookModel.findById(req.params.id)
         .then(book => {
@@ -28,11 +22,23 @@ const getBookById = async (req, res) => {
         })
         .catch(error => res.status(400).json({ success: false, error }))
 }
-const deleteBook = (req, res) => {
+const createBook = async (req, res) => {
+    //TODO validation
+    await bookModel.insertMany(req.body.book)
+        .then(() => res.status(300).json({ success: true, massage: "book added succesfuly" }))
+        .catch((error) => res.status(400).json({ success: false, error }))
 }
-const updateBook = (req, res) => {
+const updateBook = async (req, res) => {
+    await bookModel.findByIdAndUpdate(req.params.id, req.body.book)
+        .then(result => res.status(200).json({ success: true, result }))
+        .catch(error => res.status(400).json({ success: false, error }))
+}
+const deleteBook = async (req, res) => {
+    await bookModel.findByIdAndDelete(req.params.id)
+        .then(() => res.status(300).json({ success: true }))
+        .catch(error => res.status(400).json({ success: false ,error}))
+}
 
-}
 
 module.exports = {
     getBooks,

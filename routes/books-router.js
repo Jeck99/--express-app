@@ -8,7 +8,7 @@ const {
 } = require('../controllers/book-ctrl')
 
 router.get('/', getBooks)
-router.get('/byId/:id', getBookById)
+router.get('/:id', getBookById)
 router.post('/saveData', createBook)
 router.delete('/delete/:id', deleteBook)
 router.put('/update/:id', updateBook)
