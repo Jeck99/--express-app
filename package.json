@@ -17,6 +17,7 @@
     "is-empty": "^1.2.0",
     "mongoose": "^6.7.2",
     "nodemon": "^2.0.20",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "socket.io": "^4.4.1"
   }
 }
