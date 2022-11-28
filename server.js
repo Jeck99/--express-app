@@ -3,23 +3,21 @@ dotenv.config();
 const express = require('express');
 const cors = require('cors');
 require('./DB')
-const usersRouter = require('./routes/user-router');
-const booksRouter = require('./routes/books-router')
-const { usersCollection } = require('./models/users-model')
+const booksRouter = require('./routes/books-router');
+const usersRouter = require('./routes/user-router')
+const passport = require('passport');
+require('./config/passport')(passport);
 const app = express();
 const port = 8080;
 
+app.use(passport.initialize())
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 
-const myMiddleware = (req, res, next) => {
-    const user = usersCollection.find(userItem => userItem.email == req.body.email)
-    !user ? res.send("email not found") :
-        req.body.password == user.password ? next():res.send('incorrect password')
-}
-app.use('/users', usersRouter)
-app.use('/books', booksRouter)
+app.use('/books', booksRouter);
+app.use('/users',usersRouter);
+
 app.get('/', (req, res) => {
     res.send({ massage: "success" })
 })

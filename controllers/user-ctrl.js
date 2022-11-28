@@ -1,41 +1,47 @@
-const { usersCollection } = require('../models/users-model');
-const { validateEmail } = require('../validation/valid')
-const getUsers = (req, res) => {
-    res.send({ massage: "success", users: usersCollection })
+const userModel = require('../models/users-model');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
+const key = process.env.SECRET_KEY;
+const register = (req, res) => {
+    bcrypt.genSalt()
+        .then((salt) => {
+            bcrypt.hash(req.body.user.password, salt)
+                .then(async (hashPassword) => {
+                    req.body.user.password = hashPassword;
+                    await userModel.insertMany(req.body.user)
+                        .then(() => res.send("success"))
+                        .catch(err => res.send(err))
+                })
+                .catch(err => { console.log(err); })
+        })
+        .catch(error => { console.log(error); })
 }
-const createUser = (req, res) => {
-    if (validateEmail(req.body.user.email)) {
-        usersCollection.push(req.body.user)
-        res.send("success")
-    }
-    res.send("email not valid")
-}
-const getUserById = (req, res) => {
-    const userItem = usersCollection.find(user => user.id == req.params.id)
-    userItem ? res.send(userItem) : res.send("not found")
-}
-const deleteUser = (req, res) => {
-    const startIndex = findUserIndex(req)
-    const as = usersCollection.splice(startIndex, 1)
-    as ? res.send(usersCollection) : res.send("error")
-}
-const updateUser = (req, res) => {
-    const userIndex = findUserIndex(req)
-    if (userIndex > -1) {
-        usersCollection[userIndex] = req.body.user
-        return res.send("success")
-    }
-    res.send("user not found")
-}
-function findUserIndex(req) {
-    const userItem = usersCollection.find(user => user.id == req.params.id);
-    const startIndex = usersCollection.indexOf(userItem);
-    return startIndex;
+const login = async (req, res) => {
+    const email = req.body.user.email;
+    const password = req.body.user.password;
+    await userModel.findOne({ email }) 
+       .then((user) => {
+        if (!user) {
+            return res.status(404).json({ emailNotFound: "Email not found" });
+        }
+        bcrypt.compare(password, user.password).then(isMatch => {
+            if (isMatch) {
+                const payload = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                };
+                jwt.sign(payload, key, { expiresIn: 31556926 }, (err, token) => {
+                    res.json({ success: true, token: "Bearer " + token,user:{name:user.name,email:user.email} });
+                });
+            }
+            else {
+                return res.status(400).json({ passwordIncorrect: "Password incorrect" });
+            }
+        });
+    });
 }
 module.exports = {
-    getUsers,
-    createUser,
-    getUserById,
-    deleteUser,
-    updateUser
+    register,
+    login
 }
