@@ -15,7 +15,7 @@ app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 
-app.use('/books', booksRouter);
+app.use('/books',passport.authenticate('jwt', { session: false }), booksRouter);
 app.use('/users',usersRouter);
 
 app.get('/', (req, res) => {

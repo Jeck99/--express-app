@@ -13,7 +13,7 @@ passport.use(
         userModel.findById(jwt_payload.id)
         .then((user)=>{
             console.log("user found");
-            return done(null,false)
+            return done(null,user)
         })
         .catch((error)=>{
             console.log(error);
